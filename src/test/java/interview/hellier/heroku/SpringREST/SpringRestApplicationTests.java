@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
 
+import java.io.FileInputStream;
+import java.util.Arrays;
+
 @SpringBootTest
 class SpringRestApplicationTests {
 
@@ -24,6 +27,17 @@ class SpringRestApplicationTests {
 		System.out.println("Email Address: " + users.getEmail());
 		System.out.println("IP Address: " + users.getIp_address());
 
+	}
+
+	@Test
+	public void getAllUsers() {
+		User[] userArray = client.returnAllUsers();
+		//System.out.println("All Users Returned: " + Arrays.toString(userArray));
+		for (int i = 0; i > userArray.length; i++) {
+			System.out.println("All Users Returned: " + userArray[i]);
+		}
+		assertTrue(userArray.length == 1000);
+		
 	}
 
 }

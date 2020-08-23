@@ -6,6 +6,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -49,7 +50,7 @@ public class HerokuRestClient {
 
     public User[] returnAllUsers() {
 
-        User[] response; //sets an array of users to null initially
+        User[] responseArray = null; //sets an array of users to null initially
 
         try {
             URI uri; //declare uri for hitting
@@ -62,15 +63,38 @@ public class HerokuRestClient {
             HttpEntity<User[]> requestBody = new HttpEntity<User[]>(requestHeaders);
             ResponseEntity<User[]> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestBody, User[].class);
 
+            responseArray = responseEntity.getBody();
 
-
-
+            writeToFile(responseArray);
 
         } catch (URISyntaxException e) {
             System.out.println("Issue is: " + e.getMessage());
         }
 
-        return null;
+        return responseArray;
+
+    }
+
+    public void writeToFile(User[] responseArray) {
+
+        try {
+            File responseArrayFile  = new File("userarray.txt");
+            responseArrayFile.createNewFile();
+
+            FileOutputStream fos = new FileOutputStream("userarray.txt");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(responseArray);
+            oos.close();
+
+        } catch (FileNotFoundException e) {
+            e.getMessage();
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+            e.printStackTrace();
+        }
+
 
     }
 
