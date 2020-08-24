@@ -1,5 +1,6 @@
-package interview.hellier.heroku.SpringREST;
+package interview.hellier.heroku.SpringREST.Model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -33,7 +34,14 @@ public class User implements Serializable {
     @JsonProperty("longitude")
     private double longitude;
 
-    public User(int id, String first_name, String last_name, String email, String ip_address, double latitude, double longitude) {
+    @JsonCreator
+    public User(@JsonProperty("id") int id,
+                @JsonProperty("first_name") String first_name,
+                @JsonProperty("last_name") String last_name,
+                @JsonProperty("email") String email,
+                @JsonProperty("ip_address") String ip_address,
+                @JsonProperty("latitude") double latitude,
+                @JsonProperty("longitude") double longitude) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -41,6 +49,11 @@ public class User implements Serializable {
         this.ip_address = ip_address;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    @Override
+    public String toString() {
+        return "User: [id= "+ id + ", first name= " + first_name + ", last name= " + last_name + ", email= " + email + ", IP Address= " + ip_address + ", latitude= " + latitude + ", longitude= " + longitude + " ]";
     }
 
     @JsonProperty("id")

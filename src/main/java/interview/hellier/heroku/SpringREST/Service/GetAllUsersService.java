@@ -1,52 +1,25 @@
-package interview.hellier.heroku.SpringREST;
+package interview.hellier.heroku.SpringREST.Service;
 
+import interview.hellier.heroku.SpringREST.Model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Collections;
 
-@Component
-public class HerokuRestClient {
+@Service
+public class GetAllUsersService {
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Value("${heroku.api.url}")
-    String herokuUrl;
-
-    RestTemplate restTemplate;
-
-    public HerokuRestClient(RestTemplateBuilder restTemplateBuilder) {
-        restTemplate = restTemplateBuilder.build();
-    }
-
-    public User getOneUser() {
-
-        User response = null;
-        try {
-            URI uri;
-            uri = new URI(herokuUrl);
-
-           HttpHeaders requestHeaders = new HttpHeaders();
-           requestHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-           requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-           HttpEntity<User> requestBody = new HttpEntity<User>(requestHeaders);
-           ResponseEntity<User[]> responseEntity = restTemplate.exchange(uri,HttpMethod.GET, requestBody, User[].class);
-
-           response = responseEntity.getBody()[0];
-
-        } catch (URISyntaxException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return response;
-
-    }
+    String allUserEndpoint;
 
     public User[] returnAllUsers() {
 
@@ -54,7 +27,7 @@ public class HerokuRestClient {
 
         try {
             URI uri; //declare uri for hitting
-            uri = new URI(herokuUrl); //assign value from application.properties
+            uri = new URI(allUserEndpoint); //assign value from application.properties
 
             HttpHeaders requestHeaders = new HttpHeaders(); //create headers to pass to entity
             requestHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE); //add header to accept json type
@@ -78,10 +51,10 @@ public class HerokuRestClient {
     public void writeToFile(User[] responseArray) {
 
         try {
-            File responseArrayFile  = new File("userarray.txt");
+            File responseArrayFile = new File("userarray");
             responseArrayFile.createNewFile();
 
-            FileOutputStream fos = new FileOutputStream("userarray.txt");
+            FileOutputStream fos = new FileOutputStream("userarray");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 
             oos.writeObject(responseArray);
@@ -97,8 +70,5 @@ public class HerokuRestClient {
 
 
     }
-
-
-
 
 }
