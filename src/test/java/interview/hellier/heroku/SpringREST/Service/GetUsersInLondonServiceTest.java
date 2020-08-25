@@ -18,11 +18,6 @@ public class GetUsersInLondonServiceTest {
 
         User[] londonArray = getUsersInLondonService.getUsersInLondon();
 
-        for(int i = 0; i < londonArray.length; i++) {
-            System.out.println("Next User: " + londonArray[i]);
-        }
-
         assertTrue(londonArray.length == 6);
-        System.out.println("TEST SUCCESSFUL");
     }
 }

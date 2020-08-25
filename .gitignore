@@ -1,10 +1,13 @@
-HELP.md
+## App ##
 target/
-!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+userarray
 
-### STS ###
+## Maven ##
+!.mvn/wrapper/maven-wrapper.jar
+
+### Spring ###
 .apt_generated
 .classpath
 .factorypath
@@ -19,15 +22,4 @@ target/
 *.iml
 *.ipr
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
-.vscode/

@@ -18,12 +18,7 @@ public class GetAllUsersTestServiceTest {
 
         User[] userArray = getAllUsersService.returnAllUsers();
 
-        for (int i = 0; i < userArray.length; i++) {
-            System.out.println("Next User: " + userArray[i]);
-        }
-
         assertTrue(userArray.length == 1000);
-        System.out.println("TEST SUCCESSFUL");
 
     }
 

@@ -1,6 +1,8 @@
 package interview.hellier.heroku.SpringREST.Service;
-
 import interview.hellier.heroku.SpringREST.Model.User;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -12,48 +14,95 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 
+/**
+ * Service to return an array containing all users
+ *
+ * Bugs: none known
+ *
+ * @author       Ashley Hellier
+ * @version      SNAPSHOT-0.0.1
+ *
+ */
 @Service
 public class GetAllUsersService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GetAllUsersService.class);
 
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${heroku.api.url}")
-    String allUserEndpoint;
+    String allUserUri;
 
+    @Autowired
+    GetAllUsersService(final RestTemplate restTemplate,
+                            @Value("${heroku.api.url}")String allUserUri) {
+        this.restTemplate = restTemplate;
+        this.allUserUri = allUserUri;
+    }
+
+    /**
+     * Returns an array containing all users in the database by making a HTTP GET request to
+     * https://dwp-techtest.herokuapp.com/users
+     *
+     * @return User[] array containing all users returned from the API
+     *
+     */
     public User[] returnAllUsers() {
 
-        User[] responseArray = null; //sets an array of users to null initially
+        User[] allUsersArray = null; //sets an array of users to null
 
         try {
-            URI uri; //declare uri for hitting
-            uri = new URI(allUserEndpoint); //assign value from application.properties
 
-            HttpHeaders requestHeaders = new HttpHeaders(); //create headers to pass to entity
-            requestHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE); //add header to accept json type
-            requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON)); //add header to ensure response is returned as a json array
+            //set value of uri to pass into rest call
+            URI uri;
+            uri = new URI(allUserUri);
 
+            //Add headers to httpheader instance
+            HttpHeaders requestHeaders = new HttpHeaders();
+            requestHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+            requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+
+            //create http entity with request headers to pass to response entity
             HttpEntity<User[]> requestBody = new HttpEntity<User[]>(requestHeaders);
+            //make HTTP GET request
             ResponseEntity<User[]> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestBody, User[].class);
 
-            responseArray = responseEntity.getBody();
+            allUsersArray = responseEntity.getBody();
 
-            writeToFile(responseArray);
+            writeToFile(allUsersArray);
 
         } catch (URISyntaxException e) {
-            System.out.println("Issue is: " + e.getMessage());
+            System.out.println("Unable to perform getAllUsers request, error message: " + e.getMessage());
         }
 
-        return responseArray;
+        return allUsersArray;
 
     }
 
+    /**
+     * This is to serialize results of the calling method into a text file using FileOutputStream
+     *
+     * @param responseArray
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
     public void writeToFile(User[] responseArray) {
 
+        //try-catch to check if file already exists, if not, the method will create file
         try {
             File responseArrayFile = new File("userarray");
-            responseArrayFile.createNewFile();
+            if (!responseArrayFile.exists()) {
+                responseArrayFile.createNewFile();
+            } else {
+                System.out.println("File exists");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error message is: " + e.getMessage());
+        }
 
+        //try-catch to create output stream to serialize object
+        try {
             FileOutputStream fos = new FileOutputStream("userarray");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 
@@ -61,10 +110,10 @@ public class GetAllUsersService {
             oos.close();
 
         } catch (FileNotFoundException e) {
-            e.getMessage();
+            System.out.println("File Not Found Exception: " + e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {
-            e.getMessage();
+            System.out.println("IO Exception: " + e.getMessage());
             e.printStackTrace();
         }
 

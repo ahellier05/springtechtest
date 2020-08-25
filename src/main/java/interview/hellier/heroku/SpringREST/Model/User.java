@@ -7,6 +7,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.io.Serializable;
 
+/**
+ * Represents POJO for User.
+ *
+ * Bugs: none known
+ *
+ * @author       Ashley Hellier
+ * @version      SNAPSHOT-0.0.1
+ *
+ */
+
+//To indicate that this is serializable in order specified
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "id",
@@ -17,6 +28,7 @@ import java.io.Serializable;
         "latitude",
         "longitude"
 })
+
 public class User implements Serializable {
 
     @JsonProperty("id")
@@ -34,7 +46,7 @@ public class User implements Serializable {
     @JsonProperty("longitude")
     private double longitude;
 
-    @JsonCreator
+    @JsonCreator //for deserialization
     public User(@JsonProperty("id") int id,
                 @JsonProperty("first_name") String first_name,
                 @JsonProperty("last_name") String last_name,
@@ -56,74 +68,13 @@ public class User implements Serializable {
         return "User: [id= "+ id + ", first name= " + first_name + ", last name= " + last_name + ", email= " + email + ", IP Address= " + ip_address + ", latitude= " + latitude + ", longitude= " + longitude + " ]";
     }
 
-    @JsonProperty("id")
-    public int getId() {
-        return id;
-    }
-
-    @JsonProperty("id")
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @JsonProperty("first_name")
-    public String getFirst_name() {
-        return first_name;
-    }
-
-    @JsonProperty("first_name")
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
-    }
-
-    @JsonProperty("last_name")
-    public String getLast_name() {
-        return last_name;
-    }
-
-    @JsonProperty("last_name")
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
-    }
-
-
-    @JsonProperty("email")
-    public String getEmail() {
-        return email;
-    }
-
-    @JsonProperty("email")
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @JsonProperty("ip_address")
-    public String getIp_address() {
-        return ip_address;
-    }
-
-    @JsonProperty("ip_address")
-    public void setIp_address(String ip_address) {
-        this.ip_address = ip_address;
-    }
-
     @JsonProperty("latitude")
     public double getLatitude() {
         return latitude;
     }
 
-    @JsonProperty("latitude")
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     @JsonProperty("longitude")
     public double getLongitude() {
         return longitude;
-    }
-
-    @JsonProperty("longitude")
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
     }
 }
