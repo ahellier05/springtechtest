@@ -1,15 +1,14 @@
 package interview.hellier.heroku.SpringREST.Service;
 
-import interview.hellier.heroku.SpringREST.Config.AppConfig;
 import interview.hellier.heroku.SpringREST.Model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,23 +55,38 @@ public class GetUsersWithinDistanceOfLondonService {
 
     public List<User> getUsersWithin50MilesOfLondon(final long distance) {
 
-        User[] allUsersToFilter = getAllUsersService.returnAllUsers();
+        User[] allUsersToFilter = null;
 
-        // Conversion of array to ArrayList using Arrays.asList
-        List<User> listToFilter = Arrays.asList(allUsersToFilter);
-        System.out.println(listToFilter);
+        try {
+            allUsersToFilter = getAllUsersService.returnAllUsers();
 
-        return listToFilter.stream()
-                .parallel() //to iterate over large data set- the results do not need to be in order
-                .filter(i -> {
-                    try {
-                        return CalculatedDistanceService.distance(londonLatitude, londonLongitude, i.getLatitude(), i.getLongitude()) <= distance; //return all users that have locations less than the distance specified
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return false;
-                })
-                .collect(Collectors.toList());
+            // Conversion of array to ArrayList using Arrays.asList
+            List<User> listToFilter = Arrays.asList(allUsersToFilter);
+            System.out.println(listToFilter);
 
+            LOG.info("Calculating users distance and filtering list...");
+            return listToFilter.stream()
+                    .parallel() //to iterate over large data set- the results do not need to be in order
+                    .filter(i -> {
+                        try {
+                            return CalculatedDistanceService.distance(londonLatitude, londonLongitude, i.getLatitude(), i.getLongitude()) <= distance; //return all users that have locations less than the distance specified
+                        } catch (Exception e) {
+                            new Exception("Unable to calculate distance for user: " + i.toString());
+                        }
+                        return false;
+                    })
+                    .collect(Collectors.toList());
+
+        } catch (FileNotFoundException e) {
+
+            new FileNotFoundException("User Array file not found");
+
+        } catch (URISyntaxException e) {
+
+            new URISyntaxException(getAllUsersService.allUserUri, "Invalid URI format");
+
+        }
+
+        return Arrays.asList(allUsersToFilter);
     }
 }

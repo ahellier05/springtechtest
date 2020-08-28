@@ -1,5 +1,6 @@
 package interview.hellier.heroku.SpringREST.Controller;
 
+import interview.hellier.heroku.SpringREST.Error.ApiException;
 import interview.hellier.heroku.SpringREST.Model.User;
 import interview.hellier.heroku.SpringREST.Service.GetAllUsersService;
 import interview.hellier.heroku.SpringREST.Service.GetUsersInAndWithin50MilesOfLondonService;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,14 +44,16 @@ public class UserController {
      * Endpoint for retrieving all users by calling getAllUsersService
      *
      * @return List<User> - Array list of all users in json format
+     * @throws FileNotFoundException, URISyntaxException
      */
     @GetMapping(value = "/getAllUsers", produces = "application/json") //full uri will be localhost:8080/user/api/getAllUsers
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws FileNotFoundException, URISyntaxException {
 
 
         LOG.info("/getAllUsers endpoint hit");
 
         User[] allUsersA = getAllUsersService.returnAllUsers();
+
         List<User> allUsers = Arrays.asList(allUsersA);
 
         return allUsers;
@@ -60,11 +66,19 @@ public class UserController {
      * @return List<User> - Array list of filtered users in json format
      */
     @GetMapping(value = "/getUsersInOrWithin50MilesOfLondon", produces = "application/json")
-    public List<User> getFiftyMileUsers() {
+    public List<User> getFiftyMileUsers() throws ApiException {
 
         LOG.info("/getUsersInOrWithin50MilesOfLondon hit");
 
-        List<User> fiftyMileUsers = getUsersInAndWithin50MilesOfLondonService.UsersInAndWithin50MilesOfLondon();
+        List<User> fiftyMileUsers = new ArrayList<User>();
+
+        try {
+            fiftyMileUsers = getUsersInAndWithin50MilesOfLondonService.UsersInAndWithin50MilesOfLondon();
+
+            return fiftyMileUsers;
+        } catch (ApiException e) {
+            new ApiException("Unable to return results for API call requested");
+        }
 
         return fiftyMileUsers;
     }

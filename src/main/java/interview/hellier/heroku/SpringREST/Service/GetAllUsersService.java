@@ -45,14 +45,14 @@ public class GetAllUsersService {
      * https://dwp-techtest.herokuapp.com/users
      *
      * @return User[] array containing all users returned from the API
+     * @throws FileNotFoundException, URISyntaxException
      *
      */
-    public User[] returnAllUsers() {
+    public User[] returnAllUsers() throws FileNotFoundException, URISyntaxException {
 
         User[] allUsersArray = null; //sets an array of users to null
 
         try {
-
             //set value of uri to pass into rest call
             URI uri;
             uri = new URI(allUserUri);
@@ -72,10 +72,11 @@ public class GetAllUsersService {
             writeToFile(allUsersArray);
 
         } catch (URISyntaxException e) {
-            System.out.println("Unable to perform getAllUsers request, error message: " + e.getMessage());
+
+            new URISyntaxException(allUserUri, "Invalid URI format");
         }
 
-        return allUsersArray;
+            return allUsersArray;
 
     }
 
@@ -83,10 +84,9 @@ public class GetAllUsersService {
      * This is to serialize results of the calling method into a text file using FileOutputStream
      *
      * @param responseArray
-     * @throws IOException
      * @throws FileNotFoundException
      */
-    public void writeToFile(User[] responseArray) {
+    public void writeToFile(User[] responseArray) throws FileNotFoundException {
 
         //try-catch to check if file already exists, if not, the method will create file
         try {
@@ -97,8 +97,7 @@ public class GetAllUsersService {
                 System.out.println("File exists");
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error message is: " + e.getMessage());
+            throw new RuntimeException(e);
         }
 
         //try-catch to create output stream to serialize object
@@ -110,11 +109,9 @@ public class GetAllUsersService {
             oos.close();
 
         } catch (FileNotFoundException e) {
-            System.out.println("File Not Found Exception: " + e.getMessage());
-            e.printStackTrace();
+            throw new FileNotFoundException("User array file not found");
         } catch (IOException e) {
-            System.out.println("IO Exception: " + e.getMessage());
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
 

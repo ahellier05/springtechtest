@@ -72,7 +72,8 @@ public class GetUsersInLondonService {
             londonUsers = responseEntity.getBody();
 
         } catch (URISyntaxException e) {
-            System.out.println("Unable to perform getUsersInLondon request, error message: " + e.getMessage());
+
+            new URISyntaxException(londonUrl, "Invalid URI Syntax");
         }
 
         return londonUsers;
